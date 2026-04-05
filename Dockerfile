@@ -21,5 +21,5 @@ COPY --chown=user . $HOME/app/
 # Install requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the inference test script by default
-CMD ["python", "inference.py"]
+# Run the FastAPI server on port 7860 for HuggingFace Spaces
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]

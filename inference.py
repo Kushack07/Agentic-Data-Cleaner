@@ -3,17 +3,30 @@ import json
 from openai import OpenAI
 from env.environment import DataPrepEnv
 
+def log_start(task: str, env: str, model: str):
+    print(f"[START] {json.dumps({'task': task, 'env': env, 'model': model})}")
+
+def log_step(step: int, action: str, reward: float, done: bool, error: str = None):
+    print(f"[STEP] {json.dumps({'step': step, 'action': action, 'reward': reward, 'done': done, 'error': error})}")
+
+def log_end(success: bool, steps: int, score: float, rewards: list):
+    print(f"[END] {json.dumps({'success': success, 'steps': steps, 'score': score, 'rewards': rewards})}")
+
+
 def run_inference():
-    print("[START] Initializing DataPrepEnv Inference Baseline")
     
-    api_key = os.environ.get("OPENAI_API_KEY")
-    base_url = os.environ.get("API_BASE_URL")
-    model_name = os.environ.get("MODEL_NAME", "gpt-4o")
+    # Environment variables required by the submission guidelines
+    API_BASE_URL = os.getenv("API_BASE_URL", "<your-api-base-url>")
+    MODEL_NAME = os.getenv("MODEL_NAME", "<your-active-model>")
+    HF_TOKEN = os.getenv("HF_TOKEN")
     
-    if not api_key:
-        print("Warning: OPENAI_API_KEY is not set. Inference might fail if the client requires it.")
+    # Optional — if you use from_docker_image():
+    LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+    
+    if not HF_TOKEN:
+        print("Warning: HF_TOKEN is not set. Inference might fail if the client requires it.")
         
-    client = OpenAI(api_key=api_key, base_url=base_url)
+    client = OpenAI(api_key=HF_TOKEN, base_url=API_BASE_URL)
     
     # We will test on a task config. (Hard by default for demonstrating capability)
     env = DataPrepEnv({"module": "tasks.task_hard", "max_steps": 10})
@@ -34,16 +47,20 @@ Always end by executing the "submit" action when the dataset is clean.
 
     messages = [{"role": "system", "content": system_prompt}]
     
+    # Track rewards for final score
+    rewards_history = []
+    
+    log_start(task="DataPrep-Hard", env="DataPrepEnv", model=MODEL_NAME)
+    
     while not done:
-        print(f"[STEP] Current Step: {env.step_count}")
         
         # We pass the observation as json string
-        obs_dict = obs.model_dump()
+        obs_dict = obs.model_dump() if hasattr(obs, "model_dump") else obs
         messages.append({"role": "user", "content": f"Observation: {json.dumps(obs_dict)}"})
         
         try:
             response = client.chat.completions.create(
-                model=model_name,
+                model=MODEL_NAME,
                 messages=messages,
                 response_format={"type": "json_object"}
             )
@@ -51,24 +68,35 @@ Always end by executing the "submit" action when the dataset is clean.
             action_json_str = response.choices[0].message.content
             action_dict = json.loads(action_json_str)
             
-            print(f"[STEP] Chosen action: {json.dumps(action_dict)}")
-            
             # Step the environment
-            obs, reward, done, info = env.step(action_dict)
+            obs, reward_obj, done, info = env.step(action_dict)
             
-            print(f"[STEP] Reward: {reward.value} | Info: {reward.reason}")
+            # Log the step strictly
+            # Since action_dict is a dict, we dump it to str
+            rewards_history.append(reward_obj.value if hasattr(reward_obj, "value") else getattr(reward_obj, "reward", 0.0))
+            
+            log_step(
+                step=env.step_count, 
+                action=json.dumps(action_dict), 
+                reward=rewards_history[-1], 
+                done=done, 
+                error=None
+            )
+
             
             # Add assistant's action to history
             messages.append({"role": "assistant", "content": action_json_str})
-            # Provide reward feedback in the next turn
-            messages.append({"role": "user", "content": f"Reward obtained: {reward.value}. Reason: {reward.reason}. Done: {done}"})
+            messages.append({"role": "user", "content": f"Reward obtained: {rewards_history[-1]}. Done: {done}"})
             
         except Exception as e:
-            print(f"[STEP] Error during inference loop: {e}")
+            log_step(step=env.step_count, action="ERROR", reward=0.0, done=True, error=str(e))
             break
             
-    print("[END] Inference Complete.")
-    print(f"Final Data shape: {env.current_df.shape}")
+    # Calculate final score and log end
+    score = sum(rewards_history) / len(rewards_history) if rewards_history else 0.0
+    success = score > 0.5
+    log_end(success=success, steps=env.step_count, score=score, rewards=rewards_history)
+
 
 if __name__ == "__main__":
     run_inference()
