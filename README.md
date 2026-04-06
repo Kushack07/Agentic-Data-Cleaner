@@ -39,6 +39,21 @@ This repository was specifically engineered to achieve a **100% pass rate** on t
 - **Frontend / Dashboard**: **Gradio** powered by highly custom injected CSS (`Glassmorphism` styling, interactive `gr.Dataframe` structures, and dynamic web-fonts) for a visual experience that redefines what OpenEnv visualization should look like.
 - **Deployment Strategy**: Docker (Ubuntu base -> Python environment -> Containerized Web Application).
 
+## 🔌 Action & Observation Spaces
+
+### Action Space
+- `action_type`: one of `fill_missing`, `drop_duplicates`, `remove_outliers`, `normalize_column`, `convert_data_type`, or `submit`
+- `column`: optional target column for column-specific cleaning operations
+- `parameters`: free-form dictionary for strategies such as `{"fill_value": "median"}` or `{"target_type": "numeric"}`
+
+### Observation Space
+- `dataset_preview`: markdown preview of the current dataset snapshot
+- `missing_value_counts`: missing values per column
+- `duplicate_counts`: exact duplicate row count
+- `column_types`: current inferred dtype for each column
+- `summary_statistics`: descriptive statistics for numeric columns
+- `reward` and `done`: transition signals returned by the OpenEnv server during `step()`
+
 ---
 
 ## 🏎️ The Tasks & Graders
