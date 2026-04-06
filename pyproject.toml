@@ -20,6 +20,9 @@ dependencies = [
     "gradio>=4.0.0",
 ]
 
+[project.scripts]
+server = "server.app:main"
+
 [tool.setuptools]
 py-modules = ["app", "client", "models", "ui"]
 
