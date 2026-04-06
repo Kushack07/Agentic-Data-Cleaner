@@ -1,21 +1,6 @@
+spec_version: 1
 name: DataPrepEnv
-description: An environment for training agents to clean dataset issues like duplicates, missing values, and corrupted data types.
-
-environment:
-  entrypoint: env.environment:DataPrepEnv
-
-tasks:
-  - name: DataPrep-Easy
-    description: Handle duplicate rows.
-    module: tasks.task_easy
-    grader: graders.grader_easy:grade
-
-  - name: DataPrep-Medium
-    description: Handle missing values and corrupted types.
-    module: tasks.task_medium
-    grader: graders.grader_medium:grade
-
-  - name: DataPrep-Hard
-    description: Handle missing values, outliers, formatting and duplicates.
-    module: tasks.task_hard
-    grader: graders.grader_hard:grade
+type: space
+runtime: fastapi
+app: app:app
+port: 7860
