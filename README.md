@@ -1,3 +1,12 @@
+---
+title: DataPrepEnv
+emoji: 🧹
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
 # DataPrepEnv
 
 An OpenEnv-compliant reinforcement learning environment that trains AI agents to automatically clean messy datasets. Simulated tasks involve resolving issues such as exact row duplicates, missing numerical or categorical values, type corruption, and severe numerical outliers.
