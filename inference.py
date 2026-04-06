@@ -12,16 +12,17 @@ def log_step(step: int, action: str, reward: float, done: bool, error: str = Non
 def log_end(success: bool, steps: int, score: float, rewards: list):
     print(f"[END] {json.dumps({'success': success, 'steps': steps, 'score': score, 'rewards': rewards})}")
 
+API_BASE_URL = os.getenv("API_BASE_URL", "<your-api-base-url>")
+MODEL_NAME = os.getenv("MODEL_NAME", "<your-active-model>")
+HF_TOKEN = os.getenv("HF_TOKEN")
+
+# Optional - if you use from_docker_image():
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+
+
 
 def run_inference():
-    
-    # Environment variables required by the submission guidelines
-    API_BASE_URL = os.getenv("API_BASE_URL", "<your-api-base-url>")
-    MODEL_NAME = os.getenv("MODEL_NAME", "<your-active-model>")
-    HF_TOKEN = os.getenv("HF_TOKEN")
-    
-    # Optional — if you use from_docker_image():
-    LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
+
     
     if not HF_TOKEN:
         print("Warning: HF_TOKEN is not set. Inference might fail if the client requires it.")
