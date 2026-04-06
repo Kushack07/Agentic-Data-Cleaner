@@ -122,10 +122,6 @@ app = FastAPI(title="DataPrepEnv API")
 
 api_env = envs["Hard"]
 
-@app.get("/")
-def health():
-    return {"status": "ok", "message": "DataPrepEnv server running. Visit /ui for dashboard."}
-
 @app.post("/reset")
 def reset():
     obs = api_env.reset()
@@ -147,8 +143,8 @@ def state():
     obs = api_env.state()
     return obs.model_dump()
 
-# Mount Gradio dashboard to /ui
-app = gr.mount_gradio_app(app, demo, path="/ui")
+# Mount Gradio dashboard to root /
+app = gr.mount_gradio_app(app, demo, path="/")
 
 if __name__ == "__main__":
     import uvicorn

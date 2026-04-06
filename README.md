@@ -10,7 +10,7 @@ pinned: false
 
 # 🧪 DataPrepEnv: Intelligent Data Cleaning Environment
 
-🚀 **Live Premium Interactive Dashboard:** [View on Hugging Face Spaces](https://kushluvdivya-dataprepenv.hf.space/ui/)  
+🚀 **Live Premium Interactive Dashboard:** [View on Hugging Face Spaces](https://kushluvdivya-dataprepenv.hf.space/)  
 🔗 **Official OpenEnv Submission Space Base:** [Hugging Face Repository](https://huggingface.co/spaces/KushLuvdivya/DataPrepEnv)
 
 DataPrepEnv is a highly robust, fully **OpenEnv-compliant** evaluation environment designed to train, assess, and benchmark Autonomous AI Agents on the chaotic real-world task of **tabular data cleaning**.
@@ -23,7 +23,7 @@ Instead of simple toy problems, DataPrepEnv models real pipeline engineering. Ag
 
 This repository was specifically engineered to achieve a **100% pass rate** on the strict OpenEnv evaluation mechanics:
 1. **Hugging Face Spaces Native**: We bypass standard local execution and provide a hardened `Dockerfile` that maps `uvicorn` explicitly to port `7860`, allowing seamless Hugging Face Space generation.
-2. **Server Architecture Matrix**: Unlike basic Gradio apps, our `app.py` operates a **FastAPI layer** to securely expose `/reset`, `/step`, and `/state` API routes for automated remote pings, while gracefully mounting an ultra-premium Gradio UI to the `/ui` route.
+2. **Server Architecture Matrix**: Unlike basic Gradio apps, our `app.py` operates a **FastAPI layer** to securely expose `/reset`, `/step`, and `/state` API routes for automated remote pings, while gracefully mounting an ultra-premium Gradio UI directly to the root `/` route.
 3. **Bulletproof `inference.py`**:
    - Implements flawless `[START]`, `[STEP]`, `[END]` JSON log stream pipelines.
    - Restricts API credentials to exactly what the Auto-Grader injects (`API_BASE_URL`, `MODEL_NAME`, `HF_TOKEN`, `LOCAL_IMAGE_NAME`) deployed strictly at the global scope without indentation.
@@ -72,7 +72,7 @@ pip install -r requirements.txt
 ```bash
 python app.py
 ```
-Visit `http://localhost:7860/ui` to manually explore the task physics and corrupted data geometries.
+Visit `http://localhost:7860/` to manually explore the task physics and corrupted data geometries.
 
 3. **Run AI Inference Agent**:
 Configure your OpenAI endpoint or compatible proxy before firing off the testing agent.
